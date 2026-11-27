@@ -161,13 +161,96 @@ main {
   border-color: #99d5cf;
 }
 
-/* Hero (Landing Page) */
+/* Hero (Landing Page com vídeo de fundo) */
 .tc-hero {
   background:
-    radial-gradient(circle at 12% 20%, rgba(15, 118, 110, 0.12), transparent 42%),
-    radial-gradient(circle at 88% 15%, rgba(2, 132, 199, 0.12), transparent 40%),
-    linear-gradient(180deg, #ffffff 0%, var(--tc-bg) 100%);
+    radial-gradient(circle at 12% 20%, rgba(15, 118, 110, 0.28), transparent 45%),
+    radial-gradient(circle at 88% 15%, rgba(2, 132, 199, 0.25), transparent 45%),
+    linear-gradient(135deg, #0b1f2a 0%, #0f2d38 55%, #0c2233 100%);
   border-bottom: 1px solid var(--tc-border);
+}
+
+.tc-hero-video-section {
+  position: relative;
+  overflow: hidden;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+}
+
+.tc-hero-video-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tc-hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+  filter: saturate(1.1);
+}
+
+.tc-hero-video.is-ready {
+  opacity: 1;
+}
+
+.tc-hero-video-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    rgba(6, 18, 28, 0.84) 0%,
+    rgba(11, 32, 46, 0.72) 52%,
+    rgba(6, 18, 28, 0.58) 100%
+  );
+}
+
+.tc-video-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.55rem 0.4rem 0.9rem;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.62);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.tc-video-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tc-video-location i {
+  color: #2dd4bf;
+}
+
+.tc-video-btn {
+  width: 1.85rem;
+  height: 1.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.tc-video-btn:hover {
+  background: rgba(20, 184, 166, 0.55);
+  border-color: rgba(45, 212, 191, 0.8);
 }
 
 .tc-hero-badge {
@@ -732,6 +815,85 @@ main {
   color: var(--tc-muted);
 }
 
+/* Mapa interativo e rotas */
+.tc-map-canvas {
+  width: 100%;
+  height: 440px;
+  z-index: 1;
+}
+
+.tc-map-pin-wrapper {
+  background: transparent;
+  border: none;
+}
+
+.tc-map-pin {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--tc-primary);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2.5px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.35);
+}
+
+.tc-map-pin.is-done {
+  background: #16a34a;
+}
+
+.tc-map-pin.is-highlight {
+  width: 36px;
+  height: 36px;
+  background: #f59e0b;
+  color: #0f172a;
+}
+
+.tc-route-stop {
+  position: relative;
+}
+
+.tc-route-step-num {
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--tc-primary);
+  color: #ffffff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.tc-route-step-num.is-done {
+  background: #16a34a;
+}
+
+.tc-route-leg-connector {
+  margin: 0.35rem 0 0.25rem 0.7rem;
+  padding: 0.25rem 0 0.25rem 0.85rem;
+  border-left: 2px dashed var(--tc-border);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--tc-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+[data-bs-theme="dark"] .leaflet-popup-content-wrapper,
+[data-bs-theme="dark"] .leaflet-popup-tip {
+  background-color: #111827;
+  color: #f1f5f9;
+}
+
 /* Responsive tweaks */
 @media (max-width: 575.98px) {
   .tc-trip-banner {
@@ -741,5 +903,9 @@ main {
   .tc-detail-tabs .nav-link {
     padding: 0.5rem 0.85rem;
     font-size: 0.9rem;
+  }
+
+  .tc-map-canvas {
+    height: 340px;
   }
 }
