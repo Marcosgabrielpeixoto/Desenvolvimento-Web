@@ -1,0 +1,480 @@
+:root {
+  --tc-primary: #0f766e;
+  --tc-primary-dark: #0d5e58;
+  --tc-primary-soft: #e6f6f4;
+  --tc-accent: #0284c7;
+  --tc-accent-soft: #e0f2fe;
+  --tc-surface: #ffffff;
+  --tc-bg: #f4f7f9;
+  --tc-border: #e2e8f0;
+  --tc-text: #0f172a;
+  --tc-muted: #64748b;
+  --tc-danger: #dc2626;
+  --tc-danger-soft: #fef2f2;
+  --tc-warning: #d97706;
+  --tc-warning-soft: #fffbeb;
+  --tc-success: #15803d;
+  --tc-success-soft: #f0fdf4;
+  --tc-radius: 0.9rem;
+  --tc-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
+  --tc-shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+/* Override Bootstrap primary theme tokens */
+:root,
+[data-bs-theme="light"] {
+  --bs-primary: #0f766e;
+  --bs-primary-rgb: 15, 118, 110;
+  --bs-link-color: #0f766e;
+  --bs-link-hover-color: #0d5e58;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: var(--tc-bg);
+  color: var(--tc-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* Buttons */
+.btn-primary {
+  --bs-btn-bg: var(--tc-primary);
+  --bs-btn-border-color: var(--tc-primary);
+  --bs-btn-hover-bg: var(--tc-primary-dark);
+  --bs-btn-hover-border-color: var(--tc-primary-dark);
+  --bs-btn-active-bg: var(--tc-primary-dark);
+  --bs-btn-active-border-color: var(--tc-primary-dark);
+  --bs-btn-disabled-bg: var(--tc-primary);
+  --bs-btn-disabled-border-color: var(--tc-primary);
+  font-weight: 600;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--tc-primary);
+  --bs-btn-border-color: var(--tc-primary);
+  --bs-btn-hover-bg: var(--tc-primary);
+  --bs-btn-hover-border-color: var(--tc-primary);
+  --bs-btn-active-bg: var(--tc-primary-dark);
+  --bs-btn-active-border-color: var(--tc-primary-dark);
+  font-weight: 600;
+}
+
+.btn {
+  border-radius: 0.65rem;
+}
+
+.form-control,
+.form-select {
+  border-radius: 0.65rem;
+  border-color: #cbd5e1;
+  padding: 0.625rem 0.875rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--tc-primary);
+  box-shadow: 0 0 0 0.2rem rgba(15, 118, 110, 0.16);
+}
+
+/* Navbar */
+.tc-navbar {
+  background-color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--tc-border);
+}
+
+.tc-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--tc-text);
+  text-decoration: none;
+  font-size: 1.25rem;
+}
+
+.tc-brand:hover {
+  color: var(--tc-primary);
+}
+
+.tc-brand-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.65rem;
+  background: linear-gradient(135deg, var(--tc-primary), var(--tc-accent));
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.28);
+}
+
+.tc-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.8rem;
+  background-color: var(--tc-primary-soft);
+  color: var(--tc-primary-dark);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  max-width: 220px;
+}
+
+.tc-user-pill span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Cards & Surfaces */
+.tc-card {
+  background: var(--tc-surface);
+  border: 1px solid var(--tc-border);
+  border-radius: var(--tc-radius);
+  box-shadow: var(--tc-shadow-sm);
+}
+
+.tc-trip-card {
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.tc-trip-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--tc-shadow-md);
+  border-color: #99d5cf;
+}
+
+/* Hero (Landing Page) */
+.tc-hero {
+  background:
+    radial-gradient(circle at 12% 20%, rgba(15, 118, 110, 0.12), transparent 42%),
+    radial-gradient(circle at 88% 15%, rgba(2, 132, 199, 0.12), transparent 40%),
+    linear-gradient(180deg, #ffffff 0%, var(--tc-bg) 100%);
+  border-bottom: 1px solid var(--tc-border);
+}
+
+.tc-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background-color: var(--tc-primary-soft);
+  color: var(--tc-primary-dark);
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.tc-hero-title {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.12;
+}
+
+.tc-preview-card {
+  background: var(--tc-surface);
+  border: 1px solid var(--tc-border);
+  border-radius: 1.2rem;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.09);
+  overflow: hidden;
+}
+
+.tc-preview-header {
+  background: linear-gradient(135deg, var(--tc-primary), #0369a1);
+  color: #fff;
+  padding: 1.25rem 1.5rem;
+}
+
+.tc-feature-icon {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  background-color: var(--tc-primary-soft);
+  color: var(--tc-primary);
+}
+
+/* Auth Page */
+.tc-auth-wrapper {
+  min-height: calc(100vh - 135px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.tc-auth-card {
+  width: 100%;
+  max-width: 470px;
+}
+
+.tc-auth-tabs .nav-link {
+  font-weight: 700;
+  color: var(--tc-muted);
+  border-radius: 0.65rem;
+  padding: 0.65rem 1rem;
+}
+
+.tc-auth-tabs .nav-link.active {
+  background-color: var(--tc-primary);
+  color: #fff;
+}
+
+/* KPI Stat Cards */
+.tc-stat-card {
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tc-stat-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--tc-primary);
+}
+
+.tc-stat-card.active {
+  border-color: var(--tc-primary);
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.18);
+  background-color: #f8fffe;
+}
+
+.tc-stat-icon {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+/* Status Badges */
+.tc-status-badge {
+  font-weight: 700;
+  font-size: 0.76rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.tc-status-planejada {
+  background-color: var(--tc-accent-soft);
+  color: #0369a1;
+}
+
+.tc-status-andamento {
+  background-color: var(--tc-success-soft);
+  color: var(--tc-success);
+}
+
+.tc-status-encerrada {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+/* Trip Header Banner */
+.tc-trip-banner {
+  background: linear-gradient(135deg, #0f766e 0%, #0369a1 100%);
+  color: #ffffff;
+  border-radius: 1.1rem;
+  padding: 1.75rem;
+  box-shadow: 0 12px 30px rgba(15, 118, 110, 0.2);
+}
+
+.tc-trip-banner .breadcrumb-item,
+.tc-trip-banner .breadcrumb-item a,
+.tc-trip-banner .breadcrumb-item::before {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.tc-trip-banner .breadcrumb-item a:hover {
+  color: #ffffff;
+}
+
+/* Detail Tabs */
+.tc-detail-tabs {
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--tc-border);
+  padding-bottom: 0.75rem;
+}
+
+.tc-detail-tabs .nav-link {
+  border-radius: 0.7rem;
+  color: var(--tc-muted);
+  font-weight: 700;
+  padding: 0.6rem 1.15rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.tc-detail-tabs .nav-link:hover {
+  background-color: #e2e8f0;
+  color: var(--tc-text);
+}
+
+.tc-detail-tabs .nav-link.active {
+  background-color: var(--tc-primary);
+  color: #ffffff;
+}
+
+/* Itinerary Day Group & Activity Cards */
+.tc-day-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.tc-day-pill {
+  background-color: var(--tc-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+}
+
+.tc-activity-item {
+  border: 1px solid var(--tc-border);
+  border-left: 4px solid var(--tc-primary);
+  border-radius: 0.8rem;
+  background-color: var(--tc-surface);
+  padding: 1rem 1.15rem;
+  transition: background-color 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+}
+
+.tc-activity-item.is-done {
+  border-left-color: #16a34a;
+  background-color: #f8fafc;
+}
+
+.tc-activity-item.is-done .tc-activity-title {
+  text-decoration: line-through;
+  color: var(--tc-muted);
+}
+
+.tc-time-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background-color: var(--tc-primary-soft);
+  color: var(--tc-primary-dark);
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.5rem;
+}
+
+/* Category Badges */
+.tc-cat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+}
+
+.tc-cat-alimentacao {
+  background-color: #fff7ed;
+  color: #c2410c;
+}
+
+.tc-cat-transporte {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+}
+
+.tc-cat-hospedagem {
+  background-color: #f5f3ff;
+  color: #6d28d9;
+}
+
+.tc-cat-passeios {
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.tc-cat-outros {
+  background-color: #f1f5f9;
+  color: #475569;
+}
+
+/* Budget Progress */
+.tc-progress {
+  height: 0.7rem;
+  border-radius: 999px;
+  background-color: #e2e8f0;
+  overflow: hidden;
+}
+
+/* Empty States */
+.tc-empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: var(--tc-surface);
+  border: 1px dashed #cbd5e1;
+  border-radius: var(--tc-radius);
+}
+
+.tc-empty-icon {
+  width: 3.75rem;
+  height: 3.75rem;
+  margin: 0 auto 1rem;
+  border-radius: 1rem;
+  background-color: var(--tc-primary-soft);
+  color: var(--tc-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+}
+
+/* Footer */
+.tc-footer {
+  border-top: 1px solid var(--tc-border);
+  background-color: var(--tc-surface);
+  color: var(--tc-muted);
+  font-size: 0.875rem;
+}
+
+/* Toast container */
+.tc-toast-container {
+  z-index: 1090;
+}
+
+/* Responsive tweaks */
+@media (max-width: 575.98px) {
+  .tc-trip-banner {
+    padding: 1.25rem;
+  }
+
+  .tc-detail-tabs .nav-link {
+    padding: 0.5rem 0.85rem;
+    font-size: 0.9rem;
+  }
+}
