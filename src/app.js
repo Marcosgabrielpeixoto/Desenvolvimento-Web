@@ -4,6 +4,7 @@ const session = require('express-session');
 const pool = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const viagemRoutes = require('./routes/viagemRoutes');
+const atividadeRoutes = require('./routes/atividadeRoutes');
 const { AppError } = require('./utils/errors');
 
 const app = express();
@@ -35,6 +36,7 @@ app.get('/api/health', async (req, res, next) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/viagens', viagemRoutes);
+app.use('/api/atividades', atividadeRoutes);
 
 app.use((req, res) => {
   if (req.path.startsWith('/api')) {
