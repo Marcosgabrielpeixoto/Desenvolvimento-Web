@@ -49,8 +49,8 @@ function atualizarTilesTema() {
 }
 
 export async function geocodificarLocal(consulta, viewbox = null) {
-  const chave = consulta.trim().toLowerCase();
-  if (!chave) return null;
+  const chave = `br:${consulta.trim().toLowerCase()}`;
+  if (!consulta.trim()) return null;
   if (geocodeCache.has(chave)) {
     return geocodeCache.get(chave);
   }
@@ -60,6 +60,7 @@ export async function geocodificarLocal(consulta, viewbox = null) {
       q: consulta,
       format: 'json',
       limit: '1',
+      countrycodes: 'br',
       'accept-language': 'pt-BR',
     });
     if (viewbox) {

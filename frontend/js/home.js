@@ -2,19 +2,19 @@ import { authApi } from './api.js';
 
 const VIDEOS_TURISTICOS = [
   {
-    nome: 'Cataratas do Iguaçu — Brasil',
+    nome: 'Lençóis Maranhenses — MA',
+    url: 'https://upload.wikimedia.org/wikipedia/commons/0/04/Len%C3%A7%C3%B3is_Maranhenses_-_Por_do_Sol_nas_dunas.webm',
+  },
+  {
+    nome: 'Cataratas do Iguaçu — PR',
     url: 'https://upload.wikimedia.org/wikipedia/commons/1/15/Garganta_del_Diablo_en_el_Iguaz%C3%BA.webm',
   },
   {
-    nome: 'Grande Canal — Veneza, Itália',
-    url: 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Canal_Grande_MVI_0675.webm',
+    nome: 'Fernando de Noronha — PE',
+    url: 'https://upload.wikimedia.org/wikipedia/commons/4/45/Rotadorvideo.webm',
   },
   {
-    nome: 'Torre Eiffel — Paris, França',
-    url: 'https://upload.wikimedia.org/wikipedia/commons/9/95/Eiffel_Tower_shortly_before_the_New_Year.webm',
-  },
-  {
-    nome: 'Praia de Copacabana — Rio de Janeiro',
+    nome: 'Praia de Copacabana — RJ',
     url: 'https://upload.wikimedia.org/wikipedia/commons/5/5d/Rio_de_Janeiro%2C_Copacabana_Beach%2C_samba.webm',
   },
 ];
