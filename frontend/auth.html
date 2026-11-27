@@ -19,6 +19,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/theme-init.js"></script>
   </head>
   <body>
     <nav class="navbar tc-navbar">
@@ -27,9 +28,19 @@
           <span class="tc-brand-icon"><i class="bi bi-compass-fill"></i></span>
           <span>TripCraft</span>
         </a>
-        <a href="/index.html" class="btn btn-sm btn-outline-secondary">
-          <i class="bi bi-arrow-left me-1"></i>Voltar ao início
-        </a>
+        <div class="d-flex align-items-center gap-2">
+          <button
+            type="button"
+            class="btn tc-theme-toggle"
+            aria-label="Alternar modo escuro"
+            title="Alternar modo escuro"
+          >
+            <i class="bi bi-moon-stars-fill"></i>
+          </button>
+          <a href="/index.html" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Voltar ao início
+          </a>
+        </div>
       </div>
     </nav>
 
