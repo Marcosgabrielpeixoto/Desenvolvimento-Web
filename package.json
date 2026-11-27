@@ -1,0 +1,17 @@
+{
+  "name": "tripcraft-backend",
+  "version": "1.0.0",
+  "description": "TripCraft - Plataforma Web de Planejamento e Organização de Viagens",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "pg": "^8.13.3"
+  }
+}
