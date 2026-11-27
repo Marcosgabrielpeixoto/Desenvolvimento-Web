@@ -24,7 +24,7 @@ app.use(
   })
 );
 
-app.use(express.static(path.resolve(__dirname, '..')));
+app.use(express.static(path.resolve(__dirname, '..', '..', 'frontend')));
 
 app.get('/api/health', async (req, res, next) => {
   try {
