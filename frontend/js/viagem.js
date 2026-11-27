@@ -1,5 +1,13 @@
 import { viagensApi, atividadesApi, despesasApi } from './api.js';
 import {
+  inicializarModuloMapa,
+  atualizarMapaRoteiro,
+  sincronizarAtividadesMapa,
+  focarLocalNoMapa,
+  redimensionarMapa,
+} from './mapa.js';
+import { inicializarModuloSugestoes, aoAbrirAbaSugestoes } from './sugestoes.js';
+import {
   exigirAutenticacao,
   configurarNavbarAutenticada,
   CATEGORIAS_DESPESA,
@@ -374,6 +382,7 @@ function renderizarDespesas() {
 async function recarregarAtividades() {
   atividades = await atividadesApi.listarPorViagem(viagemId);
   renderizarRoteiro();
+  sincronizarAtividadesMapa(atividades);
 }
 
 async function recarregarDespesasEResumo() {
@@ -388,9 +397,9 @@ async function recarregarDespesasEResumo() {
 }
 
 // ==========================================
-// Modal de Atividade (Criar / Editar)
+// Modal de Atividade (Criar / Editar / Sugestão)
 // ==========================================
-function abrirModalAtividade(atividade = null) {
+function abrirModalAtividade(atividade = null, sugestao = null) {
   exibirAlertaInline(atividadeAlertEl, '');
   formAtividadeEl.reset();
 
@@ -411,10 +420,18 @@ function abrirModalAtividade(atividade = null) {
     document.getElementById('atividade-local').value = atividade.local_atividade || '';
     document.getElementById('atividade-descricao').value = atividade.descricao || '';
   } else {
-    document.getElementById('modal-atividade-title').textContent = 'Nova atividade';
+    document.getElementById('modal-atividade-title').textContent = sugestao
+      ? 'Adicionar sugestão ao roteiro'
+      : 'Nova atividade';
     btnSalvarAtividade.textContent = 'Salvar atividade';
     document.getElementById('atividade-id').value = '';
     inputData.value = viagemAtual.data_inicio;
+    if (sugestao) {
+      document.getElementById('atividade-titulo').value = sugestao.nome || '';
+      document.getElementById('atividade-horario').value = sugestao.horario || '';
+      document.getElementById('atividade-local').value = sugestao.local || '';
+      document.getElementById('atividade-descricao').value = sugestao.descricao || '';
+    }
   }
 
   window.bootstrap.Modal.getOrCreateInstance(modalAtividadeEl).show();
@@ -675,10 +692,37 @@ function ativarAbaInicial() {
   const aba = params.get('aba') || window.location.hash.replace('#', '');
   if (aba === 'despesas') {
     window.bootstrap.Tab.getOrCreateInstance(document.getElementById('tab-despesas-btn')).show();
+  } else if (aba === 'mapa') {
+    window.bootstrap.Tab.getOrCreateInstance(document.getElementById('tab-mapa-btn')).show();
+  } else if (aba === 'sugestoes') {
+    window.bootstrap.Tab.getOrCreateInstance(document.getElementById('tab-sugestoes-btn')).show();
   } else if (aba === 'informacoes') {
     window.bootstrap.Tab.getOrCreateInstance(document.getElementById('tab-info-btn')).show();
   }
 }
+
+let mapaJaCarregado = false;
+let sugestaoPendenteMapa = null;
+
+document.getElementById('tab-mapa-btn')?.addEventListener('shown.bs.tab', async () => {
+  redimensionarMapa();
+  if (!mapaJaCarregado) {
+    mapaJaCarregado = true;
+    await atualizarMapaRoteiro();
+  } else if (!sugestaoPendenteMapa) {
+    await atualizarMapaRoteiro();
+  }
+
+  if (sugestaoPendenteMapa) {
+    const alvo = sugestaoPendenteMapa;
+    sugestaoPendenteMapa = null;
+    await focarLocalNoMapa(alvo);
+  }
+});
+
+document.getElementById('tab-sugestoes-btn')?.addEventListener('shown.bs.tab', () => {
+  aoAbrirAbaSugestoes();
+});
 
 async function initViagem() {
   try {
@@ -709,6 +753,24 @@ async function initViagem() {
     renderizarResumoFinanceiro();
     renderizarRoteiro();
     renderizarDespesas();
+
+    inicializarModuloMapa(viagemAtual, atividades);
+    inicializarModuloSugestoes(viagemAtual, {
+      onAdicionar: (sugestao) => abrirModalAtividade(null, sugestao),
+      onVerNoMapa: (sugestao) => {
+        sugestaoPendenteMapa = {
+          nome: sugestao.nome,
+          endereco: sugestao.local,
+          lat: sugestao.lat,
+          lon: sugestao.lon,
+        };
+        const tabMapa = document.getElementById('tab-mapa-btn');
+        if (tabMapa) {
+          window.bootstrap.Tab.getOrCreateInstance(tabMapa).show();
+        }
+      },
+    });
+
     ativarAbaInicial();
 
     loadingEl.classList.add('d-none');

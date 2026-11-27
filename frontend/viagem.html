@@ -18,6 +18,11 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
+      crossorigin=""
+    />
     <link rel="stylesheet" href="/css/styles.css" />
     <script src="/js/theme-init.js"></script>
   </head>
@@ -206,6 +211,35 @@
             <li class="nav-item" role="presentation">
               <button
                 class="nav-link"
+                id="tab-mapa-btn"
+                data-bs-toggle="pill"
+                data-bs-target="#pane-mapa"
+                type="button"
+                role="tab"
+                aria-controls="pane-mapa"
+                aria-selected="false"
+              >
+                <i class="bi bi-map"></i>Mapa e Rotas
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
+                id="tab-sugestoes-btn"
+                data-bs-toggle="pill"
+                data-bs-target="#pane-sugestoes"
+                type="button"
+                role="tab"
+                aria-controls="pane-sugestoes"
+                aria-selected="false"
+              >
+                <i class="bi bi-stars"></i>Sugestões
+                <span class="badge bg-white bg-opacity-25 ms-1" id="badge-qtd-sugestoes">0</span>
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button
+                class="nav-link"
                 id="tab-info-btn"
                 data-bs-toggle="pill"
                 data-bs-target="#pane-info"
@@ -364,7 +398,176 @@
               </div>
             </div>
 
-            <!-- ABA 3: INFORMAÇÕES -->
+            <!-- ABA 3: MAPA E ROTAS -->
+            <div
+              class="tab-pane fade"
+              id="pane-mapa"
+              role="tabpanel"
+              aria-labelledby="tab-mapa-btn"
+            >
+              <div class="tc-card p-3 mb-3">
+                <div class="row g-2 align-items-center">
+                  <div class="col-12 col-md-4">
+                    <select id="mapa-filtro-dia" class="form-select form-select-sm" aria-label="Filtrar dia no mapa">
+                      <option value="todos">Todos os dias do roteiro</option>
+                    </select>
+                  </div>
+
+                  <div class="col-12 col-md-4">
+                    <div class="btn-group btn-group-sm w-100" role="group" aria-label="Modo de transporte">
+                      <button type="button" class="btn btn-outline-primary active" data-route-mode="driving">
+                        <i class="bi bi-car-front-fill me-1"></i>Carro
+                      </button>
+                      <button type="button" class="btn btn-outline-primary" data-route-mode="foot">
+                        <i class="bi bi-person-walking me-1"></i>A pé
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="col-12 col-md-4 d-flex gap-2 justify-content-md-end">
+                    <button type="button" id="btn-recalcular-rota" class="btn btn-outline-secondary btn-sm">
+                      <i class="bi bi-arrow-clockwise me-1"></i>Roteiro
+                    </button>
+                    <a
+                      href="#"
+                      id="btn-abrir-gmaps"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="btn btn-primary btn-sm disabled"
+                    >
+                      <i class="bi bi-box-arrow-up-right me-1"></i>Google Maps
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div id="mapa-status" class="alert alert-info py-2 px-3 small d-none" role="status"></div>
+
+              <div class="row g-4">
+                <div class="col-12 col-lg-8">
+                  <div class="tc-card overflow-hidden">
+                    <div id="mapa-container" class="tc-map-canvas"></div>
+                  </div>
+
+                  <!-- Traçar rota personalizada -->
+                  <div class="tc-card p-3 mt-3">
+                    <div class="small fw-bold mb-2">
+                      <i class="bi bi-sign-turn-right text-primary me-1"></i>Traçar rota personalizada
+                    </div>
+                    <form id="form-rota-custom" class="row g-2 align-items-center">
+                      <div class="col-12 col-sm-5">
+                        <input
+                          type="text"
+                          id="rota-origem"
+                          class="form-control form-control-sm"
+                          placeholder="Origem (ex.: Aeroporto ou Hotel)"
+                          required
+                        />
+                      </div>
+                      <div class="col-12 col-sm-5">
+                        <input
+                          type="text"
+                          id="rota-destino"
+                          class="form-control form-control-sm"
+                          placeholder="Destino (ex.: Teatro Amazonas)"
+                          required
+                        />
+                      </div>
+                      <div class="col-12 col-sm-2">
+                        <button type="submit" class="btn btn-primary btn-sm w-100">Traçar</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                  <div class="tc-card p-4 h-100" id="mapa-rota-resumo">
+                    <h2 class="h6 fw-bold mb-3">Resumo da rota</h2>
+                    <div class="row g-2 mb-3">
+                      <div class="col-4">
+                        <div class="p-2 rounded-3 bg-light text-center">
+                          <div class="small text-secondary">Paradas</div>
+                          <div class="fw-bold" id="mapa-total-paradas">0</div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="p-2 rounded-3 bg-light text-center">
+                          <div class="small text-secondary">Distância</div>
+                          <div class="fw-bold small" id="mapa-distancia-total">—</div>
+                        </div>
+                      </div>
+                      <div class="col-4">
+                        <div class="p-2 rounded-3 bg-light text-center">
+                          <div class="small text-secondary">Tempo</div>
+                          <div class="fw-bold small" id="mapa-tempo-total">—</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div id="mapa-trechos-lista" class="d-flex flex-column gap-2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ABA 4: SUGESTÕES DE LUGARES -->
+            <div
+              class="tab-pane fade"
+              id="pane-sugestoes"
+              role="tabpanel"
+              aria-labelledby="tab-sugestoes-btn"
+            >
+              <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                <div>
+                  <h2 class="h5 fw-bold mb-1">
+                    Lugares recomendados em <span id="sugestoes-destino-label" class="text-primary"></span>
+                  </h2>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                  <div class="btn-group btn-group-sm" role="group" aria-label="Filtrar sugestões">
+                    <button type="button" class="btn btn-outline-primary active" data-sug-filter="todas">
+                      Todos
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-sug-filter="turismo">
+                      Turismo
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-sug-filter="natureza">
+                      Natureza
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-sug-filter="cultura">
+                      Cultura
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-sug-filter="gastronomia">
+                      Gastronomia
+                    </button>
+                  </div>
+
+                  <button type="button" id="btn-buscar-mais-sugestoes" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-search me-1"></i>Buscar mais
+                  </button>
+                </div>
+              </div>
+
+              <div id="sugestoes-loading" class="text-center py-4 d-none">
+                <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                <span class="small text-secondary">Buscando pontos turísticos próximos no mapa...</span>
+              </div>
+
+              <div id="sugestoes-grid" class="row g-3"></div>
+
+              <div id="sugestoes-empty" class="tc-empty-state d-none">
+                <div class="tc-empty-icon">
+                  <i class="bi bi-compass"></i>
+                </div>
+                <h3 class="h6 fw-bold mb-2">Nenhuma sugestão encontrada neste filtro</h3>
+                <p class="small text-secondary mb-0">
+                  Troque a categoria ou clique em "Buscar mais" para consultar o OpenStreetMap.
+                </p>
+              </div>
+            </div>
+
+            <!-- ABA 5: INFORMAÇÕES -->
             <div
               class="tab-pane fade"
               id="pane-info"
@@ -586,6 +789,10 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
+      crossorigin=""
+    ></script>
     <script type="module" src="/js/viagem.js"></script>
   </body>
 </html>
