@@ -2,6 +2,8 @@ const path = require('path');
 const express = require('express');
 const session = require('express-session');
 const pool = require('./config/db');
+const authRoutes = require('./routes/authRoutes');
+const { AppError } = require('./utils/errors');
 
 const app = express();
 
@@ -30,6 +32,8 @@ app.get('/api/health', async (req, res, next) => {
   }
 });
 
+app.use('/api/auth', authRoutes);
+
 app.use((req, res) => {
   if (req.path.startsWith('/api')) {
     return res.status(404).json({
@@ -43,6 +47,14 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, _next) => {
+  if (err instanceof AppError) {
+    return res.status(err.status).json({
+      erro: {
+        codigo: err.codigo,
+        mensagem: err.mensagem,
+      },
+    });
+  }
   console.error(err);
   return res.status(500).json({
     erro: {
