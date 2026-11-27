@@ -18,7 +18,6 @@ const alertEl = document.getElementById('viagem-form-alert');
 const formEl = document.getElementById('form-viagem');
 
 const titleEl = document.getElementById('form-title');
-const subtitleEl = document.getElementById('form-subtitle');
 const breadcrumbEl = document.getElementById('breadcrumb-label');
 const btnCancelar = document.getElementById('btn-cancelar');
 const btnSalvar = document.getElementById('btn-salvar');
@@ -115,8 +114,6 @@ async function initViagemForm() {
 
     document.title = 'Editar viagem — TripCraft';
     titleEl.textContent = 'Editar viagem';
-    subtitleEl.textContent =
-      'Atualize os dados da viagem. Caso já existam atividades, o período deve continuar contemplando todas elas.';
     breadcrumbEl.textContent = 'Editar viagem';
     btnCancelar.href = `/viagem.html?id=${encodeURIComponent(viagemIdParam)}`;
     btnSalvar.innerHTML = '<i class="bi bi-check-lg me-1"></i>Salvar alterações';

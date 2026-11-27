@@ -5,7 +5,6 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const alertEl = document.getElementById('auth-alert');
 const headingEl = document.getElementById('auth-heading');
-const subheadingEl = document.getElementById('auth-subheading');
 const tabLoginBtn = document.getElementById('tab-login-btn');
 const tabCadastroBtn = document.getElementById('tab-cadastro-btn');
 const formLogin = document.getElementById('form-login');
@@ -24,13 +23,7 @@ function obterDestinoPosLogin() {
 
 function atualizarCabecalhoAba(aba) {
   exibirAlertaInline(alertEl, '');
-  if (aba === 'cadastro') {
-    headingEl.textContent = 'Crie sua conta no TripCraft';
-    subheadingEl.textContent = 'Cadastre-se gratuitamente para organizar suas viagens e despesas.';
-  } else {
-    headingEl.textContent = 'Acesse sua conta';
-    subheadingEl.textContent = 'Gerencie suas viagens, roteiros e despesas em um só lugar.';
-  }
+  headingEl.textContent = aba === 'cadastro' ? 'Criar conta' : 'Entrar';
 }
 
 function configurarAlternanciaSenhas() {
