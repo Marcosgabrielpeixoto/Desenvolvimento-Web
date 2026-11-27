@@ -79,34 +79,82 @@
     </nav>
 
     <main>
-      <!-- Hero -->
-      <section class="tc-hero py-5">
-        <div class="container py-3 py-lg-4">
+      <!-- Hero com vídeo de fundo de pontos turísticos -->
+      <section class="tc-hero tc-hero-video-section py-5">
+        <div class="tc-hero-video-bg" aria-hidden="true">
+          <video
+            id="hero-bg-video"
+            class="tc-hero-video"
+            autoplay
+            muted
+            playsinline
+            preload="metadata"
+          ></video>
+          <div class="tc-hero-video-overlay"></div>
+        </div>
+
+        <div class="container py-4 py-lg-5 position-relative" style="z-index: 2;">
           <div class="row align-items-center g-5">
             <div class="col-lg-6">
-              <h1 class="display-5 tc-hero-title mb-3">
+              <h1 class="display-5 tc-hero-title text-white mb-3">
                 Planeje sua próxima viagem
               </h1>
-              <p class="lead text-secondary mb-4">
-                Roteiros e despesas em um só lugar.
+              <p class="lead text-white text-opacity-75 mb-4">
+                Roteiros, rotas no mapa, sugestões de lugares e despesas em um só lugar.
               </p>
 
               <div id="hero-cta-guest" class="d-flex flex-wrap gap-3">
-                <a href="/auth.html?tab=cadastro" class="btn btn-primary btn-lg px-4">
+                <a href="/auth.html?tab=cadastro" class="btn btn-primary btn-lg px-4 shadow-sm">
                   <i class="bi bi-person-plus me-2"></i>Criar conta
                 </a>
-                <a href="/auth.html?tab=login" class="btn btn-outline-primary btn-lg px-4">
+                <a href="/auth.html?tab=login" class="btn btn-outline-light btn-lg px-4">
                   <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
                 </a>
               </div>
 
               <div id="hero-cta-auth" class="d-none flex-wrap gap-3">
-                <a href="/dashboard.html" class="btn btn-primary btn-lg px-4">
+                <a href="/dashboard.html" class="btn btn-primary btn-lg px-4 shadow-sm">
                   <i class="bi bi-suitcase-lg me-2"></i>Acessar minhas viagens
                 </a>
-                <a href="/viagem-form.html" class="btn btn-outline-primary btn-lg px-4">
+                <a href="/viagem-form.html" class="btn btn-outline-light btn-lg px-4">
                   <i class="bi bi-plus-lg me-1"></i>Nova viagem
                 </a>
+              </div>
+
+              <div class="tc-video-controls mt-4" id="hero-video-controls">
+                <span class="tc-video-location">
+                  <i class="bi bi-geo-alt-fill"></i>
+                  <span id="hero-video-label">Cataratas do Iguaçu — Brasil</span>
+                </span>
+                <div class="d-inline-flex align-items-center gap-1">
+                  <button
+                    type="button"
+                    id="btn-video-prev"
+                    class="tc-video-btn"
+                    title="Ponto turístico anterior"
+                    aria-label="Ponto turístico anterior"
+                  >
+                    <i class="bi bi-chevron-left"></i>
+                  </button>
+                  <button
+                    type="button"
+                    id="btn-video-toggle"
+                    class="tc-video-btn"
+                    title="Pausar vídeo"
+                    aria-label="Pausar ou reproduzir vídeo"
+                  >
+                    <i class="bi bi-pause-fill"></i>
+                  </button>
+                  <button
+                    type="button"
+                    id="btn-video-next"
+                    class="tc-video-btn"
+                    title="Próximo ponto turístico"
+                    aria-label="Próximo ponto turístico"
+                  >
+                    <i class="bi bi-chevron-right"></i>
+                  </button>
+                </div>
               </div>
             </div>
 
