@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Viagem — TripCraft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script src="/js/theme-init.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-md tc-navbar sticky-top">
+      <div class="container py-1">
+        <a class="tc-brand" href="/dashboard.html">
+          <span class="tc-brand-icon"><i class="bi bi-compass-fill"></i></span>
+          <span>TripCraft</span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2 order-md-3 ms-md-2">
+          <button
+            type="button"
+            class="btn tc-theme-toggle"
+            aria-label="Alternar modo escuro"
+            title="Alternar modo escuro"
+          >
+            <i class="bi bi-moon-stars-fill"></i>
+          </button>
+
+          <button
+            class="navbar-toggler border-0"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarApp"
+            aria-controls="navbarApp"
+            aria-expanded="false"
+            aria-label="Abrir menu"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
+        <div class="collapse navbar-collapse order-md-2" id="navbarApp">
+          <ul class="navbar-nav me-auto ms-md-4 mt-2 mt-md-0">
+            <li class="nav-item">
+              <a class="nav-link fw-semibold" href="/dashboard.html">
+                <i class="bi bi-suitcase-lg me-1"></i>Minhas viagens
+              </a>
+            </li>
+          </ul>
+
+          <div class="d-flex flex-column flex-md-row align-items-md-center gap-2 mt-2 mt-md-0">
+            <span class="tc-user-pill">
+              <i class="bi bi-person-circle"></i>
+              <span id="nav-user-name">Carregando...</span>
+            </span>
+            <button type="button" id="btn-logout" class="btn btn-outline-secondary btn-sm px-3">
+              <i class="bi bi-box-arrow-right me-1"></i>Sair
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="py-4 py-md-5">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-12 col-lg-8 col-xl-7">
+            <nav aria-label="Navegação" class="mb-3">
+              <ol class="breadcrumb mb-0 small">
+                <li class="breadcrumb-item"><a href="/dashboard.html">Minhas viagens</a></li>
+                <li class="breadcrumb-item active" aria-current="page" id="breadcrumb-label">
+                  Nova viagem
+                </li>
+              </ol>
+            </nav>
+
+            <div id="form-loading" class="tc-card p-5 text-center d-none">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Carregando dados da viagem...</span>
+              </div>
+              <p class="text-secondary mt-3 mb-0">Carregando informações da viagem...</p>
+            </div>
+
+            <div id="form-not-found" class="tc-empty-state d-none">
+              <div class="tc-empty-icon">
+                <i class="bi bi-exclamation-octagon"></i>
+              </div>
+              <h1 class="h5 fw-bold mb-2">Viagem não encontrada</h1>
+              <p class="text-secondary mb-4">
+                Esta viagem não existe ou você não tem permissão para editá-la.
+              </p>
+              <a href="/dashboard.html" class="btn btn-primary px-4">Voltar ao Dashboard</a>
+            </div>
+
+            <div id="form-card" class="tc-card p-4 p-md-5">
+              <div class="mb-4">
+                <h1 class="h4 fw-bold mb-1" id="form-title">Nova viagem</h1>
+                <p class="text-secondary small mb-0" id="form-subtitle">
+                  Informe os dados principais para começar a organizar seu roteiro e despesas.
+                </p>
+              </div>
+
+              <div id="viagem-form-alert" class="d-none"></div>
+
+              <form id="form-viagem" novalidate>
+                <div class="mb-3">
+                  <label for="viagem-titulo" class="form-label fw-semibold small">
+                    Título da viagem <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="viagem-titulo"
+                    name="titulo"
+                    maxlength="150"
+                    placeholder="Ex.: Férias em Manaus"
+                    required
+                  />
+                </div>
+
+                <div class="mb-3">
+                  <label for="viagem-destino" class="form-label fw-semibold small">
+                    Destino <span class="text-danger">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="viagem-destino"
+                    name="destino"
+                    maxlength="150"
+                    placeholder="Ex.: Manaus - AM"
+                    required
+                  />
+                </div>
+
+                <div class="row g-3 mb-3">
+                  <div class="col-12 col-sm-6">
+                    <label for="viagem-data-inicio" class="form-label fw-semibold small">
+                      Data inicial <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="viagem-data-inicio"
+                      name="data_inicio"
+                      required
+                    />
+                  </div>
+
+                  <div class="col-12 col-sm-6">
+                    <label for="viagem-data-fim" class="form-label fw-semibold small">
+                      Data final <span class="text-danger">*</span>
+                    </label>
+                    <input
+                      type="date"
+                      class="form-control"
+                      id="viagem-data-fim"
+                      name="data_fim"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="viagem-orcamento" class="form-label fw-semibold small">
+                    Orçamento planejado (R$) <span class="text-danger">*</span>
+                  </label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light fw-semibold">R$</span>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="viagem-orcamento"
+                      name="orcamento"
+                      min="0"
+                      step="0.01"
+                      placeholder="0,00"
+                      required
+                    />
+                  </div>
+                  <div class="form-text">
+                    Informe um valor maior ou igual a zero. O status da viagem será calculado
+                    automaticamente pelas datas.
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label for="viagem-descricao" class="form-label fw-semibold small">
+                    Descrição <span class="text-muted fw-normal">(opcional)</span>
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="viagem-descricao"
+                    name="descricao"
+                    rows="3"
+                    placeholder="Observações gerais, objetivos da viagem, detalhes de hospedagem..."
+                  ></textarea>
+                </div>
+
+                <div class="d-flex flex-column-reverse flex-sm-row justify-content-end gap-2">
+                  <a href="/dashboard.html" id="btn-cancelar" class="btn btn-outline-secondary px-4">
+                    Cancelar
+                  </a>
+                  <button type="submit" id="btn-salvar" class="btn btn-primary px-4">
+                    <i class="bi bi-check-lg me-1"></i>Salvar viagem
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="tc-footer py-3">
+      <div class="container text-center">
+        <span><strong>TripCraft</strong> &bull; Planejamento individual de viagens</span>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module" src="/js/viagemForm.js"></script>
+  </body>
+</html>
