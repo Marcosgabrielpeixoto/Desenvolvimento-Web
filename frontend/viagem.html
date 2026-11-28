@@ -18,11 +18,6 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
       rel="stylesheet"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css"
-      crossorigin=""
-    />
     <link rel="stylesheet" href="/css/styles.css" />
     <script src="/js/theme-init.js"></script>
   </head>
@@ -399,29 +394,32 @@
                     </select>
                   </div>
 
-                  <div class="col-12 col-md-4">
+                  <div class="col-12 col-md-5">
                     <div class="btn-group btn-group-sm w-100" role="group" aria-label="Modo de transporte">
                       <button type="button" class="btn btn-outline-primary active" data-route-mode="driving">
                         <i class="bi bi-car-front-fill me-1"></i>Carro
                       </button>
-                      <button type="button" class="btn btn-outline-primary" data-route-mode="foot">
+                      <button type="button" class="btn btn-outline-primary" data-route-mode="walking">
                         <i class="bi bi-person-walking me-1"></i>A pé
+                      </button>
+                      <button type="button" class="btn btn-outline-primary" data-route-mode="transit">
+                        <i class="bi bi-bus-front me-1"></i>Ônibus
                       </button>
                     </div>
                   </div>
 
-                  <div class="col-12 col-md-4 d-flex gap-2 justify-content-md-end">
-                    <button type="button" id="btn-recalcular-rota" class="btn btn-outline-secondary btn-sm">
-                      <i class="bi bi-arrow-clockwise me-1"></i>Roteiro
+                  <div class="col-12 col-md-3 d-flex gap-2 justify-content-md-end">
+                    <button type="button" id="btn-recalcular-rota" class="btn btn-outline-secondary btn-sm" title="Voltar ao roteiro">
+                      <i class="bi bi-arrow-clockwise"></i>
                     </button>
                     <a
                       href="#"
                       id="btn-abrir-gmaps"
                       target="_blank"
                       rel="noopener noreferrer"
-                      class="btn btn-primary btn-sm disabled"
+                      class="btn btn-primary btn-sm flex-grow-1 flex-md-grow-0 disabled"
                     >
-                      <i class="bi bi-box-arrow-up-right me-1"></i>Google Maps
+                      <i class="bi bi-sign-turn-right-fill me-1"></i>Rota no Google Maps
                     </a>
                   </div>
                 </div>
@@ -437,7 +435,7 @@
                         id="mapa-busca-local"
                         class="form-control border-start-0 ps-0"
                         list="mapa-referencias-list"
-                        placeholder="Buscar local no mapa (ex.: Teatro Amazonas, Aeroporto, Av. Paulista...)"
+                        placeholder="Buscar local no Google Maps (ex.: Teatro Amazonas, Aeroporto, Av. Paulista...)"
                         aria-label="Buscar local no mapa"
                       />
                     </div>
@@ -449,20 +447,40 @@
                 <datalist id="mapa-referencias-list"></datalist>
               </div>
 
-              <div id="mapa-status" class="alert alert-info py-2 px-3 small d-none" role="status"></div>
-
               <div class="row g-4">
                 <div class="col-12 col-lg-8">
                   <div class="tc-card overflow-hidden">
-                    <div id="mapa-container" class="tc-map-canvas"></div>
+                    <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom small">
+                      <span class="fw-semibold text-truncate">
+                        <i class="bi bi-geo-alt-fill text-primary me-1"></i>
+                        <span id="mapa-local-atual">Google Maps</span>
+                      </span>
+                      <a
+                        href="#"
+                        id="btn-abrir-local-gmaps"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-decoration-none text-nowrap ms-2"
+                      >
+                        Abrir no Google Maps <i class="bi bi-box-arrow-up-right"></i>
+                      </a>
+                    </div>
+                    <iframe
+                      id="mapa-iframe"
+                      class="tc-map-frame"
+                      title="Mapa do Google Maps"
+                      loading="lazy"
+                      referrerpolicy="no-referrer-when-downgrade"
+                      allowfullscreen
+                    ></iframe>
                   </div>
 
                   <div class="tc-card p-3 mt-3">
                     <div class="small fw-bold mb-2">
-                      <i class="bi bi-sign-turn-right text-primary me-1"></i>Traçar rota personalizada
+                      <i class="bi bi-sign-turn-right text-primary me-1"></i>Abrir rota no Google Maps
                     </div>
                     <form id="form-rota-custom" class="row g-2 align-items-center">
-                      <div class="col-12 col-sm-5">
+                      <div class="col-12 col-sm-4 col-md-5">
                         <input
                           type="text"
                           id="rota-origem"
@@ -472,7 +490,7 @@
                           required
                         />
                       </div>
-                      <div class="col-12 col-sm-5">
+                      <div class="col-12 col-sm-4 col-md-4">
                         <input
                           type="text"
                           id="rota-destino"
@@ -482,8 +500,10 @@
                           required
                         />
                       </div>
-                      <div class="col-12 col-sm-2">
-                        <button type="submit" class="btn btn-primary btn-sm w-100">Traçar</button>
+                      <div class="col-12 col-sm-4 col-md-3">
+                        <button type="submit" class="btn btn-primary btn-sm w-100">
+                          <i class="bi bi-box-arrow-up-right me-1"></i>Traçar rota
+                        </button>
                       </div>
                     </form>
                   </div>
@@ -491,26 +511,9 @@
 
                 <div class="col-12 col-lg-4">
                   <div class="tc-card p-4 h-100" id="mapa-rota-resumo">
-                    <h2 class="h6 fw-bold mb-3">Resumo da rota</h2>
-                    <div class="row g-2 mb-3">
-                      <div class="col-4">
-                        <div class="p-2 rounded-3 bg-light text-center">
-                          <div class="small text-secondary">Paradas</div>
-                          <div class="fw-bold" id="mapa-total-paradas">0</div>
-                        </div>
-                      </div>
-                      <div class="col-4">
-                        <div class="p-2 rounded-3 bg-light text-center">
-                          <div class="small text-secondary">Distância</div>
-                          <div class="fw-bold small" id="mapa-distancia-total">—</div>
-                        </div>
-                      </div>
-                      <div class="col-4">
-                        <div class="p-2 rounded-3 bg-light text-center">
-                          <div class="small text-secondary">Tempo</div>
-                          <div class="fw-bold small" id="mapa-tempo-total">—</div>
-                        </div>
-                      </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                      <h2 class="h6 fw-bold mb-0">Paradas do roteiro</h2>
+                      <span class="badge text-bg-primary rounded-pill" id="mapa-total-paradas">0</span>
                     </div>
 
                     <div id="mapa-trechos-lista" class="d-flex flex-column gap-2"></div>
@@ -796,10 +799,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"
-      crossorigin=""
-    ></script>
     <script type="module" src="/js/viagem.js"></script>
   </body>
 </html>

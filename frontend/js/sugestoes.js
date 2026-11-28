@@ -1,10 +1,27 @@
 import { escapeHtml } from './ui.js';
-import { geocodificarLocal } from './mapa.js';
 import {
   normalizarTexto,
   encontrarDestinoCatalogo,
   obterDestaquesBrasil,
 } from './destinos.js';
+
+async function buscarCoordenadasDestino(destino) {
+  try {
+    const params = new URLSearchParams({
+      q: `${destino}, Brasil`,
+      format: 'json',
+      limit: '1',
+      countrycodes: 'br',
+    });
+    const res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`);
+    if (!res.ok) return null;
+    const dados = await res.json();
+    if (!Array.isArray(dados) || dados.length === 0) return null;
+    return { lat: Number(dados[0].lat), lon: Number(dados[0].lon) };
+  } catch {
+    return null;
+  }
+}
 
 const CATEGORIAS_SUGESTAO = {
   turismo: { label: 'Ponto turístico', icon: 'bi-camera-fill', css: 'tc-cat-passeios' },
@@ -34,7 +51,7 @@ async function buscarSugestoesOpenStreetMap(destino) {
   const cat = encontrarDestinoCatalogo(destino);
   const coords = cat
     ? { lat: cat.centro.lat, lon: cat.centro.lon }
-    : await geocodificarLocal(destino);
+    : await buscarCoordenadasDestino(destino);
   if (!coords) return [];
 
   const query = `
