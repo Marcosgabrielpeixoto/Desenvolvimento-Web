@@ -1,12 +1,12 @@
-/**
- * Módulo de mapa interativo e indicação de rotas (Leaflet + OpenStreetMap + OSRM).
- * Geocodifica o destino e os locais das atividades do roteiro, traça a rota
- * cronológica entre os pontos e exibe distância, tempo estimado e trechos.
- */
-
 import { escapeHtml, formatarDataBR, calcularNumeroDiaViagem } from './ui.js';
+import {
+  encontrarDestinoCatalogo,
+  listarReferenciasDoDestino,
+  buscarReferenciaLocal,
+} from './destinos.js';
 
 const geocodeCache = new Map();
+const REGEX_NAO_LATINO = /[\u3000-\u9FFF\uAC00-\uD7AF\u0400-\u04FF\u0600-\u06FF\u0E00-\u0E7F]/;
 
 let mapa = null;
 let tileLayerAtual = null;
@@ -16,7 +16,7 @@ let layerDestaque = null;
 
 let viagemRef = null;
 let atividadesRef = [];
-let modoTransporte = 'driving'; // 'driving' | 'foot'
+let modoTransporte = 'driving';
 let filtroDia = 'todos';
 let destinoCoords = null;
 let ultimosPontosRota = [];
@@ -48,53 +48,123 @@ function atualizarTilesTema() {
   }).addTo(mapa);
 }
 
-export async function geocodificarLocal(consulta, viewbox = null) {
-  const chave = `br:${consulta.trim().toLowerCase()}`;
-  if (!consulta.trim()) return null;
-  if (geocodeCache.has(chave)) {
-    return geocodeCache.get(chave);
-  }
+function limparConsulta(texto) {
+  return String(texto || '')
+    .replace(/\s*-\s*[A-Za-z]{2}\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
 
+function dentroDoBrasil(lat, lon) {
+  return lat >= -34.5 && lat <= 6.0 && lon >= -74.5 && lon <= -28.0;
+}
+
+async function buscarNoPhoton(consulta, focoCoords = null) {
+  try {
+    const params = new URLSearchParams({ q: consulta, limit: '5' });
+    if (focoCoords) {
+      params.set('lat', String(focoCoords.lat));
+      params.set('lon', String(focoCoords.lon));
+    }
+    const res = await fetch(`https://photon.komoot.io/api/?${params.toString()}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    const features = Array.isArray(data.features) ? data.features : [];
+
+    for (const f of features) {
+      const [lon, lat] = f.geometry?.coordinates || [];
+      const props = f.properties || {};
+      const pais = (props.countrycode || '').toUpperCase();
+      if (!Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+      if (pais && pais !== 'BR') continue;
+      if (!dentroDoBrasil(lat, lon)) continue;
+
+      const partes = [props.name, props.street, props.city || props.county, props.state].filter(
+        (v) => v && !REGEX_NAO_LATINO.test(v)
+      );
+      return {
+        lat,
+        lon,
+        displayName: partes.join(', ') || consulta,
+      };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+async function buscarNoNominatim(consulta, viewbox = null) {
   try {
     const params = new URLSearchParams({
       q: consulta,
       format: 'json',
-      limit: '1',
+      limit: '3',
       countrycodes: 'br',
       'accept-language': 'pt-BR',
     });
     if (viewbox) {
       params.set('viewbox', viewbox);
     }
-
     const res = await fetch(`https://nominatim.openstreetmap.org/search?${params.toString()}`, {
       headers: { Accept: 'application/json' },
     });
     if (!res.ok) return null;
     const dados = await res.json();
-    if (!Array.isArray(dados) || dados.length === 0) {
-      geocodeCache.set(chave, null);
-      return null;
-    }
+    if (!Array.isArray(dados) || dados.length === 0) return null;
 
-    const primeiro = dados[0];
-    const resultado = {
-      lat: Number(primeiro.lat),
-      lon: Number(primeiro.lon),
-      displayName: primeiro.display_name,
-      boundingbox: primeiro.boundingbox,
+    const valido = dados.find((d) => dentroDoBrasil(Number(d.lat), Number(d.lon)));
+    if (!valido) return null;
+
+    return {
+      lat: Number(valido.lat),
+      lon: Number(valido.lon),
+      displayName: valido.display_name,
     };
-    geocodeCache.set(chave, resultado);
-    return resultado;
   } catch {
     return null;
   }
 }
 
-function calcularViewbox(coords) {
-  if (!coords) return null;
-  const delta = 0.6;
-  return `${coords.lon - delta},${coords.lat + delta},${coords.lon + delta},${coords.lat - delta}`;
+export async function geocodificarLocal(consulta, contextoDestino = '', focoCoords = null) {
+  const texto = String(consulta || '').trim();
+  if (!texto) return null;
+
+  const chave = `${texto.toLowerCase()}|${contextoDestino.toLowerCase()}`;
+  if (geocodeCache.has(chave)) {
+    return geocodeCache.get(chave);
+  }
+
+  const referencia = buscarReferenciaLocal(texto, contextoDestino);
+  if (referencia) {
+    geocodeCache.set(chave, referencia);
+    return referencia;
+  }
+
+  const viewbox = focoCoords
+    ? `${focoCoords.lon - 0.6},${focoCoords.lat + 0.6},${focoCoords.lon + 0.6},${focoCoords.lat - 0.6}`
+    : null;
+
+  const cidadeLimpa = limparConsulta(contextoDestino);
+  const textoLimpo = limparConsulta(texto);
+  const consultaComCidade =
+    cidadeLimpa && !textoLimpo.toLowerCase().includes(cidadeLimpa.toLowerCase())
+      ? `${textoLimpo}, ${cidadeLimpa}, Brasil`
+      : `${textoLimpo}, Brasil`;
+
+  let achado = await buscarNoPhoton(consultaComCidade, focoCoords);
+  if (!achado) {
+    achado = await buscarNoNominatim(consultaComCidade, viewbox);
+  }
+  if (!achado && textoLimpo !== consultaComCidade) {
+    achado = await buscarNoPhoton(`${textoLimpo}, Brasil`, focoCoords);
+  }
+  if (!achado) {
+    achado = await buscarNoNominatim(`${textoLimpo}, Brasil`, null);
+  }
+
+  geocodeCache.set(chave, achado);
+  return achado;
 }
 
 function formatarDistancia(metros) {
@@ -113,10 +183,9 @@ function formatarDuracao(segundos) {
 }
 
 function criarIconeNumerado(numero, concluida = false) {
-  const classeExtra = concluida ? 'is-done' : '';
   return window.L.divIcon({
     className: 'tc-map-pin-wrapper',
-    html: `<div class="tc-map-pin ${classeExtra}">${numero}</div>`,
+    html: `<div class="tc-map-pin ${concluida ? 'is-done' : ''}">${numero}</div>`,
     iconSize: [32, 32],
     iconAnchor: [16, 16],
     popupAnchor: [0, -18],
@@ -156,20 +225,20 @@ function gerarUrlGoogleMaps(pontos, perfil) {
   if (pontos.length === 1) {
     return `https://www.google.com/maps/search/?api=1&query=${pontos[0].lat},${pontos[0].lon}`;
   }
-  const origem = `${pontos[0].lat},${pontos[0].lon}`;
-  const destino = `${pontos[pontos.length - 1].lat},${pontos[pontos.length - 1].lon}`;
   const params = new URLSearchParams({
     api: '1',
-    origin: origem,
-    destination: destino,
+    origin: `${pontos[0].lat},${pontos[0].lon}`,
+    destination: `${pontos[pontos.length - 1].lat},${pontos[pontos.length - 1].lon}`,
     travelmode,
   });
   if (pontos.length > 2) {
-    const waypoints = pontos
-      .slice(1, -1)
-      .map((p) => `${p.lat},${p.lon}`)
-      .join('|');
-    params.set('waypoints', waypoints);
+    params.set(
+      'waypoints',
+      pontos
+        .slice(1, -1)
+        .map((p) => `${p.lat},${p.lon}`)
+        .join('|')
+    );
   }
   return `https://www.google.com/maps/dir/?${params.toString()}`;
 }
@@ -195,6 +264,25 @@ function atualizarSeletorDias() {
   } else {
     filtroDia = 'todos';
     selectDia.value = 'todos';
+  }
+}
+
+function preencherReferenciasAutocompletar() {
+  const lista = listarReferenciasDoDestino(viagemRef?.destino || '');
+  const opcoesHtml = lista
+    .map((item) => `<option value="${escapeHtml(item.nome)}">${escapeHtml(item.local)}</option>`)
+    .join('');
+
+  const datalistRotas = document.getElementById('mapa-referencias-list');
+  if (datalistRotas) {
+    datalistRotas.innerHTML = opcoesHtml;
+  }
+
+  const datalistAtividade = document.getElementById('atividade-locais-list');
+  if (datalistAtividade) {
+    datalistAtividade.innerHTML = lista
+      .map((item) => `<option value="${escapeHtml(item.local)}">${escapeHtml(item.nome)}</option>`)
+      .join('');
   }
 }
 
@@ -249,8 +337,8 @@ function renderizarResumoRota(pontos, rotaOSRM, naoLocalizadas = []) {
   if (pontos.length === 0) {
     trechosEl.innerHTML = `
       <div class="text-secondary small">
-        Adicione atividades com campo <strong>Local</strong> preenchido no roteiro (ou use a rota
-        personalizada abaixo) para visualizar os pontos e trajetos no mapa.
+        Adicione atividades com <strong>Local</strong> preenchido no roteiro ou trace uma rota
+        personalizada abaixo usando qualquer endereço ou ponto turístico do Brasil.
       </div>
     `;
     return;
@@ -287,7 +375,7 @@ function renderizarResumoRota(pontos, rotaOSRM, naoLocalizadas = []) {
     naoLocalizadas.length > 0
       ? `<div class="alert alert-warning small py-2 px-3 mt-3 mb-0">
            <i class="bi bi-exclamation-triangle me-1"></i>
-           Não foi possível localizar no mapa: ${escapeHtml(naoLocalizadas.join(', '))}.
+           Não localizado: ${escapeHtml(naoLocalizadas.join(', '))}.
          </div>`
       : '';
 
@@ -299,7 +387,9 @@ function garantirMapaInicializado() {
   if (!container || !window.L) return false;
 
   if (!mapa) {
-    mapa = window.L.map(container, { scrollWheelZoom: true }).setView([-3.119, -60.0217], 12);
+    const cat = encontrarDestinoCatalogo(viagemRef?.destino || '');
+    const inicial = cat ? [cat.centro.lat, cat.centro.lon] : [-14.235, -51.9253];
+    mapa = window.L.map(container, { scrollWheelZoom: true }).setView(inicial, cat ? 12 : 4);
     atualizarTilesTema();
     layerMarcadores = window.L.layerGroup().addTo(mapa);
     layerRota = window.L.layerGroup().addTo(mapa);
@@ -340,7 +430,7 @@ async function desenharRotaPontos(pontos, naoLocalizadas = []) {
 
   let rotaOSRM = null;
   if (pontos.length >= 2) {
-    setStatusMapa('Calculando melhor rota entre as paradas...', true);
+    setStatusMapa('Calculando rota entre os pontos...', true);
     rotaOSRM = await calcularRotaOSRM(pontos, modoTransporte);
 
     if (rotaOSRM?.geometry?.coordinates?.length) {
@@ -385,13 +475,14 @@ export async function atualizarMapaRoteiro() {
 
   mapa.invalidateSize();
   atualizarSeletorDias();
-
-  setStatusMapa('Localizando destino e pontos do roteiro...', true);
+  setStatusMapa('Localizando pontos do roteiro...', true);
 
   if (!destinoCoords) {
-    destinoCoords = await geocodificarLocal(viagemRef.destino);
+    const cat = encontrarDestinoCatalogo(viagemRef.destino);
+    destinoCoords = cat
+      ? { lat: cat.centro.lat, lon: cat.centro.lon, displayName: cat.cidade }
+      : await geocodificarLocal(viagemRef.destino);
   }
-  const viewbox = calcularViewbox(destinoCoords);
 
   const filtradas =
     filtroDia === 'todos'
@@ -405,10 +496,9 @@ export async function atualizarMapaRoteiro() {
     const termoLocal = atv.local_atividade?.trim();
     if (!termoLocal) continue;
 
-    // Tenta primeiro "local, destino", depois só "local"
-    let coords = await geocodificarLocal(`${termoLocal}, ${viagemRef.destino}`, viewbox);
-    if (!coords) {
-      coords = await geocodificarLocal(termoLocal, viewbox);
+    let coords = await geocodificarLocal(termoLocal, viagemRef.destino, destinoCoords);
+    if (!coords && atv.titulo) {
+      coords = await geocodificarLocal(atv.titulo, viagemRef.destino, destinoCoords);
     }
 
     if (coords) {
@@ -437,9 +527,15 @@ export async function focarLocalNoMapa({ nome, endereco, lat, lon }) {
   let pontoLon = Number(lon);
 
   if (!Number.isFinite(pontoLat) || !Number.isFinite(pontoLon)) {
-    const viewbox = calcularViewbox(destinoCoords);
-    const achado = await geocodificarLocal(`${endereco || nome}, ${viagemRef?.destino || ''}`, viewbox);
-    if (!achado) return;
+    const achado = await geocodificarLocal(
+      endereco || nome,
+      viagemRef?.destino || '',
+      destinoCoords
+    );
+    if (!achado) {
+      setStatusMapa(`Não foi possível encontrar "${nome}" no mapa.`);
+      return;
+    }
     pontoLat = achado.lat;
     pontoLon = achado.lon;
   }
@@ -457,7 +553,7 @@ export async function focarLocalNoMapa({ nome, endereco, lat, lon }) {
         <div class="fw-bold mb-1">${escapeHtml(nome)}</div>
         ${endereco ? `<div class="text-muted mb-2">${escapeHtml(endereco)}</div>` : ''}
         <a href="${gmapsUrl}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm py-0 px-2">
-          <i class="bi bi-sign-turn-right me-1"></i>Traçar rota no Google Maps
+          <i class="bi bi-sign-turn-right me-1"></i>Abrir rota no Google Maps
         </a>
       </div>
     `
@@ -469,40 +565,55 @@ export async function focarLocalNoMapa({ nome, endereco, lat, lon }) {
 
 async function handleRotaPersonalizada(event) {
   event.preventDefault();
-  const inputOrigem = document.getElementById('rota-origem');
-  const inputDestino = document.getElementById('rota-destino');
-  const origemTxt = inputOrigem?.value.trim();
-  const destinoTxt = inputDestino?.value.trim();
+  const origemTxt = document.getElementById('rota-origem')?.value.trim();
+  const destinoTxt = document.getElementById('rota-destino')?.value.trim();
 
   if (!origemTxt || !destinoTxt || !garantirMapaInicializado()) return;
 
-  setStatusMapa('Calculando rota personalizada...', true);
-  const viewbox = calcularViewbox(destinoCoords);
+  setStatusMapa('Buscando endereços e calculando rota...', true);
 
   const [cOrigem, cDestino] = await Promise.all([
-    geocodificarLocal(`${origemTxt}, ${viagemRef.destino}`, viewbox).then(
-      (r) => r || geocodificarLocal(origemTxt, viewbox)
-    ),
-    geocodificarLocal(`${destinoTxt}, ${viagemRef.destino}`, viewbox).then(
-      (r) => r || geocodificarLocal(destinoTxt, viewbox)
-    ),
+    geocodificarLocal(origemTxt, viagemRef.destino, destinoCoords),
+    geocodificarLocal(destinoTxt, viagemRef.destino, destinoCoords),
   ]);
 
   if (!cOrigem || !cDestino) {
-    setStatusMapa('Não foi possível localizar a origem ou o destino informados.');
+    const faltando = !cOrigem && !cDestino ? 'origem e destino' : !cOrigem ? 'a origem' : 'o destino';
+    setStatusMapa(`Não foi possível localizar ${faltando}. Tente incluir o nome da cidade ou escolher uma sugestão.`);
     return;
   }
 
-  const pontos = [
-    { titulo: origemTxt, local: origemTxt, lat: cOrigem.lat, lon: cOrigem.lon },
-    { titulo: destinoTxt, local: destinoTxt, lat: cDestino.lat, lon: cDestino.lon },
-  ];
-  await desenharRotaPontos(pontos);
+  layerDestaque?.clearLayers();
+  await desenharRotaPontos([
+    { titulo: cOrigem.nome || origemTxt, local: cOrigem.displayName || origemTxt, lat: cOrigem.lat, lon: cOrigem.lon },
+    { titulo: cDestino.nome || destinoTxt, local: cDestino.displayName || destinoTxt, lat: cDestino.lat, lon: cDestino.lon },
+  ]);
+}
+
+async function handleBuscaLocalMapa(event) {
+  event.preventDefault();
+  const termo = document.getElementById('mapa-busca-local')?.value.trim();
+  if (!termo || !garantirMapaInicializado()) return;
+
+  setStatusMapa(`Buscando "${termo}"...`, true);
+  const achado = await geocodificarLocal(termo, viagemRef.destino, destinoCoords);
+  if (!achado) {
+    setStatusMapa(`Local "${termo}" não encontrado no Brasil. Tente informar cidade ou bairro.`);
+    return;
+  }
+  setStatusMapa('');
+  await focarLocalNoMapa({
+    nome: achado.nome || termo,
+    endereco: achado.displayName || termo,
+    lat: achado.lat,
+    lon: achado.lon,
+  });
 }
 
 export function inicializarModuloMapa(viagem, atividades) {
   viagemRef = viagem;
   atividadesRef = atividades;
+  preencherReferenciasAutocompletar();
 
   const selectDia = document.getElementById('mapa-filtro-dia');
   selectDia?.addEventListener('change', () => {
@@ -530,6 +641,7 @@ export function inicializarModuloMapa(viagem, atividades) {
   });
 
   document.getElementById('form-rota-custom')?.addEventListener('submit', handleRotaPersonalizada);
+  document.getElementById('form-busca-mapa')?.addEventListener('submit', handleBuscaLocalMapa);
 }
 
 export function sincronizarAtividadesMapa(novasAtividades) {

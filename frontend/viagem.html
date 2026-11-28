@@ -81,7 +81,6 @@
 
     <main class="py-4">
       <div class="container">
-        <!-- Loading -->
         <div id="viagem-loading" class="text-center py-5">
           <div class="spinner-border text-primary" role="status">
             <span class="visually-hidden">Carregando viagem...</span>
@@ -89,7 +88,6 @@
           <p class="text-secondary mt-3 mb-0">Carregando detalhes da viagem...</p>
         </div>
 
-        <!-- Not found / Forbidden -->
         <div id="viagem-not-found" class="tc-empty-state my-4 d-none">
           <div class="tc-empty-icon">
             <i class="bi bi-shield-exclamation"></i>
@@ -103,9 +101,7 @@
           </a>
         </div>
 
-        <!-- Conteúdo principal -->
         <div id="viagem-content" class="d-none">
-          <!-- Banner da viagem -->
           <section class="tc-trip-banner mb-4">
             <nav aria-label="Navegação" class="mb-2">
               <ol class="breadcrumb mb-0 small">
@@ -142,7 +138,6 @@
             </div>
           </section>
 
-          <!-- Faixa rápida de indicadores -->
           <section class="row g-3 mb-4">
             <div class="col-6 col-lg-3">
               <div class="tc-card p-3 h-100">
@@ -170,13 +165,11 @@
             </div>
           </section>
 
-          <!-- Alerta global se orçamento ultrapassado -->
           <div id="alerta-orcamento-excedido" class="alert alert-danger d-none align-items-center gap-2 mb-4 shadow-sm" role="alert">
             <i class="bi bi-exclamation-octagon-fill fs-5 flex-shrink-0"></i>
             <div id="alerta-orcamento-texto" class="fw-semibold"></div>
           </div>
 
-          <!-- Abas: Roteiro | Despesas | Informações -->
           <ul class="nav nav-pills tc-detail-tabs mb-4" id="viagem-tabs" role="tablist">
             <li class="nav-item" role="presentation">
               <button
@@ -254,7 +247,6 @@
           </ul>
 
           <div class="tab-content">
-            <!-- ABA 1: ROTEIRO -->
             <div
               class="tab-pane fade show active"
               id="pane-roteiro"
@@ -295,14 +287,12 @@
               </div>
             </div>
 
-            <!-- ABA 2: DESPESAS E RESUMO FINANCEIRO -->
             <div
               class="tab-pane fade"
               id="pane-despesas"
               role="tabpanel"
               aria-labelledby="tab-despesas-btn"
             >
-              <!-- Resumo financeiro -->
               <div class="tc-card p-4 mb-4">
                 <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 mb-3">
                   <h2 class="h5 fw-bold mb-0">Resumo financeiro</h2>
@@ -336,7 +326,6 @@
                   <div id="resumo-progress-bar" class="progress-bar bg-primary" style="width: 0%"></div>
                 </div>
 
-                <!-- Distribuição por categoria -->
                 <div id="resumo-categorias-wrapper" class="pt-2 border-top d-none">
                   <div class="small fw-bold text-secondary text-uppercase mb-2">
                     Gastos por categoria
@@ -345,7 +334,6 @@
                 </div>
               </div>
 
-              <!-- Controles de despesas -->
               <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-3">
                 <div class="d-flex align-items-center gap-2">
                   <label for="filtro-categoria-despesa" class="small fw-semibold text-secondary mb-0">
@@ -366,7 +354,6 @@
                 </button>
               </div>
 
-              <!-- Tabela de despesas -->
               <div id="despesas-table-card" class="tc-card overflow-hidden d-none">
                 <div class="table-responsive">
                   <table class="table table-hover align-middle mb-0">
@@ -398,7 +385,6 @@
               </div>
             </div>
 
-            <!-- ABA 3: MAPA E ROTAS -->
             <div
               class="tab-pane fade"
               id="pane-mapa"
@@ -406,7 +392,7 @@
               aria-labelledby="tab-mapa-btn"
             >
               <div class="tc-card p-3 mb-3">
-                <div class="row g-2 align-items-center">
+                <div class="row g-2 align-items-center mb-2">
                   <div class="col-12 col-md-4">
                     <select id="mapa-filtro-dia" class="form-select form-select-sm" aria-label="Filtrar dia no mapa">
                       <option value="todos">Todos os dias do roteiro</option>
@@ -439,6 +425,28 @@
                     </a>
                   </div>
                 </div>
+
+                <form id="form-busca-mapa" class="row g-2 align-items-center pt-2 border-top">
+                  <div class="col-12 col-sm-9 col-md-10">
+                    <div class="input-group input-group-sm">
+                      <span class="input-group-text bg-white border-end-0 text-secondary">
+                        <i class="bi bi-search"></i>
+                      </span>
+                      <input
+                        type="search"
+                        id="mapa-busca-local"
+                        class="form-control border-start-0 ps-0"
+                        list="mapa-referencias-list"
+                        placeholder="Buscar local no mapa (ex.: Teatro Amazonas, Aeroporto, Av. Paulista...)"
+                        aria-label="Buscar local no mapa"
+                      />
+                    </div>
+                  </div>
+                  <div class="col-12 col-sm-3 col-md-2">
+                    <button type="submit" class="btn btn-outline-primary btn-sm w-100">Localizar</button>
+                  </div>
+                </form>
+                <datalist id="mapa-referencias-list"></datalist>
               </div>
 
               <div id="mapa-status" class="alert alert-info py-2 px-3 small d-none" role="status"></div>
@@ -449,7 +457,6 @@
                     <div id="mapa-container" class="tc-map-canvas"></div>
                   </div>
 
-                  <!-- Traçar rota personalizada -->
                   <div class="tc-card p-3 mt-3">
                     <div class="small fw-bold mb-2">
                       <i class="bi bi-sign-turn-right text-primary me-1"></i>Traçar rota personalizada
@@ -460,7 +467,8 @@
                           type="text"
                           id="rota-origem"
                           class="form-control form-control-sm"
-                          placeholder="Origem (ex.: Aeroporto ou Hotel)"
+                          list="mapa-referencias-list"
+                          placeholder="Origem (ex.: Aeroporto Eduardo Gomes)"
                           required
                         />
                       </div>
@@ -469,6 +477,7 @@
                           type="text"
                           id="rota-destino"
                           class="form-control form-control-sm"
+                          list="mapa-referencias-list"
                           placeholder="Destino (ex.: Teatro Amazonas)"
                           required
                         />
@@ -510,7 +519,6 @@
               </div>
             </div>
 
-            <!-- ABA 4: SUGESTÕES DE LUGARES -->
             <div
               class="tab-pane fade"
               id="pane-sugestoes"
@@ -567,7 +575,6 @@
               </div>
             </div>
 
-            <!-- ABA 5: INFORMAÇÕES -->
             <div
               class="tab-pane fade"
               id="pane-info"
@@ -623,7 +630,6 @@
       </div>
     </main>
 
-    <!-- MODAL: CRIAR / EDITAR ATIVIDADE -->
     <div class="modal fade" id="modal-atividade" tabindex="-1" aria-labelledby="modal-atividade-title" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4">
@@ -675,9 +681,11 @@
                   type="text"
                   class="form-control"
                   id="atividade-local"
+                  list="atividade-locais-list"
                   maxlength="150"
                   placeholder="Ex.: Largo de São Sebastião, Centro"
                 />
+                <datalist id="atividade-locais-list"></datalist>
               </div>
 
               <div class="mb-0">
@@ -703,7 +711,6 @@
       </div>
     </div>
 
-    <!-- MODAL: CRIAR / EDITAR DESPESA -->
     <div class="modal fade" id="modal-despesa" tabindex="-1" aria-labelledby="modal-despesa-title" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow-lg rounded-4">
