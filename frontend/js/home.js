@@ -139,7 +139,6 @@ async function initHome() {
       heroAuth.classList.add('d-flex');
     }
   } catch {
-    // Visitante não autenticado — mantém botões padrão de Entrar / Criar conta.
   }
 }
 

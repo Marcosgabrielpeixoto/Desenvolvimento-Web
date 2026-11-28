@@ -1,8 +1,3 @@
-/**
- * Módulo central de comunicação HTTP com a API REST do TripCraft.
- * Utiliza Fetch API com cookies de sessão (express-session).
- */
-
 export class ApiError extends Error {
   constructor(status, codigo, mensagem) {
     super(mensagem);

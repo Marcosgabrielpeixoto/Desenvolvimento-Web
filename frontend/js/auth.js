@@ -43,7 +43,6 @@ async function verificarSessaoExistente() {
     await authApi.me();
     window.location.replace(obterDestinoPosLogin());
   } catch {
-    // Não autenticado, permanece na página de auth.
   }
 }
 

@@ -20,7 +20,6 @@
   --tc-shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
-/* Override Bootstrap primary theme tokens */
 :root,
 [data-bs-theme="light"] {
   --bs-primary: #0f766e;
@@ -46,7 +45,6 @@ main {
   flex: 1;
 }
 
-/* Buttons */
 .btn-primary {
   --bs-btn-bg: var(--tc-primary);
   --bs-btn-border-color: var(--tc-primary);
@@ -86,7 +84,6 @@ main {
   box-shadow: 0 0 0 0.2rem rgba(15, 118, 110, 0.16);
 }
 
-/* Navbar */
 .tc-navbar {
   background-color: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(10px);
@@ -140,7 +137,6 @@ main {
   white-space: nowrap;
 }
 
-/* Cards & Surfaces */
 .tc-card {
   background: var(--tc-surface);
   border: 1px solid var(--tc-border);
@@ -161,7 +157,6 @@ main {
   border-color: #99d5cf;
 }
 
-/* Hero (Landing Page com vídeo de fundo) */
 .tc-hero {
   background:
     radial-gradient(circle at 12% 20%, rgba(15, 118, 110, 0.28), transparent 45%),
@@ -297,7 +292,6 @@ main {
   color: var(--tc-primary);
 }
 
-/* Auth Page */
 .tc-auth-wrapper {
   min-height: calc(100vh - 135px);
   display: flex;
@@ -323,7 +317,6 @@ main {
   color: #fff;
 }
 
-/* KPI Stat Cards */
 .tc-stat-card {
   cursor: pointer;
   transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
@@ -350,7 +343,6 @@ main {
   font-size: 1.2rem;
 }
 
-/* Status Badges */
 .tc-status-badge {
   font-weight: 700;
   font-size: 0.76rem;
@@ -377,7 +369,6 @@ main {
   color: #475569;
 }
 
-/* Trip Header Banner */
 .tc-trip-banner {
   background: linear-gradient(135deg, #0f766e 0%, #0369a1 100%);
   color: #ffffff;
@@ -396,7 +387,6 @@ main {
   color: #ffffff;
 }
 
-/* Detail Tabs */
 .tc-detail-tabs {
   gap: 0.5rem;
   border-bottom: 1px solid var(--tc-border);
@@ -423,7 +413,6 @@ main {
   color: #ffffff;
 }
 
-/* Itinerary Day Group & Activity Cards */
 .tc-day-header {
   display: flex;
   align-items: center;
@@ -471,7 +460,6 @@ main {
   border-radius: 0.5rem;
 }
 
-/* Category Badges */
 .tc-cat-badge {
   display: inline-flex;
   align-items: center;
@@ -507,7 +495,6 @@ main {
   color: #475569;
 }
 
-/* Budget Progress */
 .tc-progress {
   height: 0.7rem;
   border-radius: 999px;
@@ -515,7 +502,6 @@ main {
   overflow: hidden;
 }
 
-/* Empty States */
 .tc-empty-state {
   text-align: center;
   padding: 3rem 1.5rem;
@@ -537,7 +523,6 @@ main {
   font-size: 1.75rem;
 }
 
-/* Footer */
 .tc-footer {
   border-top: 1px solid var(--tc-border);
   background-color: var(--tc-surface);
@@ -545,12 +530,10 @@ main {
   font-size: 0.875rem;
 }
 
-/* Toast container */
 .tc-toast-container {
   z-index: 1090;
 }
 
-/* Theme toggle button */
 .tc-theme-toggle {
   width: 2.2rem;
   height: 2.2rem;
@@ -572,9 +555,6 @@ main {
   transform: translateY(-1px);
 }
 
-/* ==========================================
-   Modo Escuro (Bootstrap 5.3 data-bs-theme)
-   ========================================== */
 [data-bs-theme="dark"] {
   --tc-primary: #14b8a6;
   --tc-primary-dark: #0d9488;
@@ -815,7 +795,6 @@ main {
   color: var(--tc-muted);
 }
 
-/* Mapa interativo e rotas */
 .tc-map-canvas {
   width: 100%;
   height: 440px;
@@ -894,7 +873,6 @@ main {
   color: #f1f5f9;
 }
 
-/* Responsive tweaks */
 @media (max-width: 575.98px) {
   .tc-trip-banner {
     padding: 1.25rem;

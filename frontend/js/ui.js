@@ -1,8 +1,3 @@
-/**
- * Utilitários compartilhados de interface, formatação, segurança XSS,
- * notificações (toasts), modal de confirmação e proteção de rotas.
- */
-
 import { authApi } from './api.js';
 
 const currencyFormatter = new Intl.NumberFormat('pt-BR', {
@@ -49,9 +44,6 @@ export function formatarMoeda(valor) {
   return currencyFormatter.format(Number.isFinite(numero) ? numero : 0);
 }
 
-/**
- * Converte data ISO "AAAA-MM-DD" sem deslocamento de fuso horário.
- */
 export function parseDataISO(dataISO) {
   if (!dataISO || typeof dataISO !== 'string') return null;
   const partes = dataISO.split('-').map(Number);
@@ -188,9 +180,6 @@ export function setBotaoCarregando(botao, carregando, textoCarregando = 'Salvand
   }
 }
 
-/**
- * Modal de confirmação reutilizável (retorna Promise<boolean>).
- */
 export function confirmarAcao({
   titulo = 'Confirmar ação',
   mensagem = 'Deseja realmente continuar?',
@@ -264,10 +253,6 @@ export function confirmarAcao({
   });
 }
 
-/**
- * Garante que o usuário esteja autenticado em páginas privadas (RF05 / RN02).
- * Caso contrário, redireciona para auth.html.
- */
 export async function exigirAutenticacao() {
   try {
     const usuario = await authApi.me();
@@ -282,9 +267,6 @@ export async function exigirAutenticacao() {
   }
 }
 
-/**
- * Configura nome do usuário e botão de logout na barra superior de páginas privadas.
- */
 export function configurarNavbarAutenticada(usuario) {
   const nomeEl = document.getElementById('nav-user-name');
   if (nomeEl && usuario) {
@@ -322,6 +304,5 @@ export function salvarFlashMessage(mensagem, tipo = 'success') {
   try {
     sessionStorage.setItem('tc_flash', JSON.stringify({ mensagem, tipo }));
   } catch {
-    // Ignora se sessionStorage não estiver disponível
   }
 }

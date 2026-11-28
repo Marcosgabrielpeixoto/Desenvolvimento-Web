@@ -38,19 +38,16 @@ let resumoFinanceiro = null;
 let filtroAtividade = 'todas';
 let filtroCategoriaDespesa = 'todas';
 
-// Elementos principais
 const loadingEl = document.getElementById('viagem-loading');
 const notFoundEl = document.getElementById('viagem-not-found');
 const notFoundMessageEl = document.getElementById('not-found-message');
 const contentEl = document.getElementById('viagem-content');
 
-// Roteiro
 const roteiroListaEl = document.getElementById('roteiro-lista');
 const roteiroEmptyEl = document.getElementById('roteiro-empty');
 const roteiroEmptyTitleEl = document.getElementById('roteiro-empty-title');
 const roteiroEmptyDescEl = document.getElementById('roteiro-empty-desc');
 
-// Despesas
 const despesasTableCardEl = document.getElementById('despesas-table-card');
 const despesasTbodyEl = document.getElementById('despesas-tbody');
 const despesasEmptyEl = document.getElementById('despesas-empty');
@@ -58,7 +55,6 @@ const despesasEmptyTitleEl = document.getElementById('despesas-empty-title');
 const despesasEmptyDescEl = document.getElementById('despesas-empty-desc');
 const filtroCategoriaEl = document.getElementById('filtro-categoria-despesa');
 
-// Modais
 const modalAtividadeEl = document.getElementById('modal-atividade');
 const formAtividadeEl = document.getElementById('form-atividade');
 const atividadeAlertEl = document.getElementById('atividade-modal-alert');
@@ -86,7 +82,6 @@ function renderizarCabecalhoEInfo() {
   document.getElementById('btn-editar-viagem').href = editUrl;
   document.getElementById('info-btn-editar').href = editUrl;
 
-  // Aba Informações
   document.getElementById('info-titulo').textContent = viagemAtual.titulo;
   document.getElementById('info-destino').textContent = viagemAtual.destino;
   document.getElementById('info-data-inicio').textContent = formatarDataBR(viagemAtual.data_inicio);
@@ -104,21 +99,18 @@ function renderizarResumoFinanceiro() {
   const { orcamento, total_gasto: totalGasto, saldo_disponivel: saldo } = resumoFinanceiro;
   const excedido = saldo < 0;
 
-  // Faixa rápida
   document.getElementById('quick-orcamento').textContent = formatarMoeda(orcamento);
   document.getElementById('quick-gasto').textContent = formatarMoeda(totalGasto);
   const quickSaldoEl = document.getElementById('quick-saldo');
   quickSaldoEl.textContent = formatarMoeda(saldo);
   quickSaldoEl.className = `h5 fw-bold mb-0 mt-1 ${excedido ? 'text-danger' : 'text-success'}`;
 
-  // Card de resumo na aba Despesas
   document.getElementById('resumo-orcamento').textContent = formatarMoeda(orcamento);
   document.getElementById('resumo-total-gasto').textContent = formatarMoeda(totalGasto);
   const resumoSaldoEl = document.getElementById('resumo-saldo');
   resumoSaldoEl.textContent = formatarMoeda(saldo);
   resumoSaldoEl.className = `h4 fw-bold mb-0 mt-1 ${excedido ? 'text-danger' : 'text-success'}`;
 
-  // Alerta global de orçamento excedido (RF24 / RN14)
   const alertaOrcamentoEl = document.getElementById('alerta-orcamento-excedido');
   const alertaTextoEl = document.getElementById('alerta-orcamento-texto');
   if (excedido) {
@@ -130,7 +122,6 @@ function renderizarResumoFinanceiro() {
     alertaOrcamentoEl.classList.remove('d-flex');
   }
 
-  // Percentual e barra de progresso
   let percentual = 0;
   if (orcamento > 0) {
     percentual = (totalGasto / orcamento) * 100;
@@ -162,7 +153,6 @@ function renderizarResumoFinanceiro() {
     badgeEl.textContent = `${percentual.toFixed(0)}% utilizado`;
   }
 
-  // Distribuição por categoria
   const wrapperCat = document.getElementById('resumo-categorias-wrapper');
   const gridCat = document.getElementById('resumo-categorias');
 
@@ -228,7 +218,6 @@ function renderizarRoteiro() {
 
   roteiroEmptyEl.classList.add('d-none');
 
-  // Agrupar cronologicamente por data_atividade
   const grupos = new Map();
   for (const atv of filtradas) {
     if (!grupos.has(atv.data_atividade)) {
@@ -396,9 +385,6 @@ async function recarregarDespesasEResumo() {
   renderizarDespesas();
 }
 
-// ==========================================
-// Modal de Atividade (Criar / Editar / Sugestão)
-// ==========================================
 function abrirModalAtividade(atividade = null, sugestao = null) {
   exibirAlertaInline(atividadeAlertEl, '');
   formAtividadeEl.reset();
@@ -484,9 +470,6 @@ formAtividadeEl?.addEventListener('submit', async (event) => {
   }
 });
 
-// ==========================================
-// Modal de Despesa (Criar / Editar)
-// ==========================================
 function abrirModalDespesa(despesa = null) {
   exibirAlertaInline(despesaAlertEl, '');
   formDespesaEl.reset();
@@ -559,9 +542,6 @@ formDespesaEl?.addEventListener('submit', async (event) => {
   }
 });
 
-// ==========================================
-// Eventos de botões e listas
-// ==========================================
 document.getElementById('btn-nova-atividade')?.addEventListener('click', () => abrirModalAtividade());
 document.getElementById('btn-empty-atividade')?.addEventListener('click', () => abrirModalAtividade());
 document.getElementById('btn-nova-despesa')?.addEventListener('click', () => abrirModalDespesa());
@@ -582,7 +562,6 @@ filtroCategoriaEl?.addEventListener('change', () => {
   renderizarDespesas();
 });
 
-// Ações em atividades
 roteiroListaEl?.addEventListener('click', async (event) => {
   const btnToggle = event.target.closest('.btn-toggle-atividade');
   if (btnToggle) {
@@ -633,7 +612,6 @@ roteiroListaEl?.addEventListener('click', async (event) => {
   }
 });
 
-// Ações em despesas
 despesasTbodyEl?.addEventListener('click', async (event) => {
   const btnEditar = event.target.closest('.btn-editar-despesa');
   if (btnEditar) {
@@ -666,7 +644,6 @@ despesasTbodyEl?.addEventListener('click', async (event) => {
   }
 });
 
-// Excluir viagem inteira
 document.getElementById('btn-excluir-viagem')?.addEventListener('click', async () => {
   if (!viagemAtual) return;
   const confirmado = await confirmarAcao({

@@ -1,7 +1,3 @@
-/**
- * Inicialização síncrona do tema (claro/escuro) para evitar flash visual
- * e gerenciamento do botão de alternância em todas as telas.
- */
 (function () {
   const STORAGE_KEY = 'tc_theme';
 
@@ -12,7 +8,6 @@
         return salvo;
       }
     } catch {
-      // Ignora caso storage não esteja disponível
     }
     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
       ? 'dark'
@@ -40,13 +35,11 @@
       try {
         localStorage.setItem(STORAGE_KEY, tema);
       } catch {
-        // Ignora erro de storage
       }
     }
     atualizarBotoes(tema);
   }
 
-  // Aplica imediatamente antes da renderização do body
   const temaInicial = obterTemaInicial();
   document.documentElement.setAttribute('data-bs-theme', temaInicial);
 
